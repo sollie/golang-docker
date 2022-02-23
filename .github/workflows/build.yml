@@ -18,7 +18,7 @@ jobs:
         if: "startsWith(github.ref, 'refs/tags/v')"
         run: |
           echo ::set-output name=tag::${GITHUB_REF#refs/tags/v}
-          echo "SHORT_VERSION=$(echo {$GITHUB_REF#refs/tags/v}) | cut -f1-2 -d'.'" >> $GITHUB_ENV
+          echo "SHORT_VERSION=$(echo ${GITHUB_REF#refs/tags/v} | cut -f1-2 -d'.')" >> $GITHUB_ENV
 
       - name: Checkout Code
         uses: actions/checkout@v2
