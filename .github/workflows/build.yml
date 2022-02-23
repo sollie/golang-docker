@@ -25,6 +25,20 @@ jobs:
         run: |
           echo ::set-output name=short-tag::$(echo ${GITHUB_REF#refs/tags/v} | cut -f1-2 -d'.')
 
+      - id: debug1
+        shell: bash
+        run: |
+          echo ${{ steps.tag.outputs.tag }}
+      - id: debug2
+        shell: bash
+        run: |
+          echo ${{ steps.short.outputs.tag }}
+      - id: debug3
+        shell: bash
+        run: |
+          echo ${{ steps.tag.outputs.tag }}
+          echo ${{ steps.short.outputs.tag }}
+
       - name: Checkout Code
         uses: actions/checkout@v2
 
