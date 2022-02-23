@@ -23,7 +23,7 @@ jobs:
         id: short
         if: "startsWith(github.ref, 'refs/tags/v')"
         run: |
-          short-tag=$(echo ${{ step.tag.outputs.tag }} | cut -f1-2 -d'.')
+          short-tag=$(echo ${{ steps.tag.outputs.tag }} | cut -f1-2 -d'.')
           echo ::set-output name=short-tag::$short-tag
 
       - id: debug1
