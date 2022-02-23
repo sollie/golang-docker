@@ -18,7 +18,7 @@ jobs:
         if: "startsWith(github.ref, 'refs/tags/v')"
         run: |
           echo ::set-output name=tag::${GITHUB_REF#refs/tags/v}
-          echo ::set-output name=short-tag::$(echo ${{steps.tag.outputs.tag }} | cut -f1-2 -d".")
+          echo "SHORT_VERSION=${echo GITHUB_REF#refs/tags/v} | cut -f1-2 -d'.'" >> $GITHUB_ENV
 
       - name: Checkout Code
         uses: actions/checkout@v2
@@ -44,4 +44,4 @@ jobs:
           tags: |
             ghcr.io/${{ github.repository }}:latest
             ghcr.io/${{ github.repository }}:${{ steps.tag.outputs.tag }}
-            ghcr.io/${{ github.repository }}:${{ steps.tag.outputs.short-tag }}
+            ghcr.io/${{ github.repository }}:${{ env.SHORT_TAG }}
