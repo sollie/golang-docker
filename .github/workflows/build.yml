@@ -23,22 +23,8 @@ jobs:
         id: short
         if: "startsWith(github.ref, 'refs/tags/v')"
         run: |
-          short-tag=$(echo ${{ steps.tag.outputs.tag }} | cut -f1-2 -d'.')
-          echo ::set-output name=short-tag::$short-tag
-
-      - id: debug1
-        shell: bash
-        run: |
-          echo ${{ steps.tag.outputs.tag }}
-      - id: debug2
-        shell: bash
-        run: |
-          echo ${{ steps.short.outputs.tag }}
-      - id: debug3
-        shell: bash
-        run: |
-          echo ${{ steps.tag.outputs.tag }}
-          echo ${{ steps.short.outputs.tag }}
+          short-tag="$(echo ${{ steps.tag.outputs.tag }} | cut -f1-2 -d'.')"
+          echo ::set-output name=tag::$short-tag
 
       - name: Checkout Code
         uses: actions/checkout@v2
