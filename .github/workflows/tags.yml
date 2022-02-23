@@ -13,10 +13,13 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - id: prep
+      - name: Tag
+        id: tag
         if: "startsWith(github.ref, 'refs/tags/v')"
         run: |
-          echo ::set-output name=tags::${GITHUB_REF#refs/tags/v}
+          echo ::set-output name=tag::${GITHUB_REF#refs/tags/v}
+          echo ::set-output name=short-tag::$(echo ${{steps.tag.outputs.tag }} | cut -f1-2 -d".")
+
       - name: Checkout Code
         uses: actions/checkout@v2
 
@@ -40,4 +43,5 @@ jobs:
           push: true # Will only build if this is not here
           tags: |
             ghcr.io/${{ github.repository }}:latest
-            ghcr.io/${{ github.repository }}:${{ steps.prep.outputs.tags }}
+            ghcr.io/${{ github.repository }}:${{ steps.tag.outputs.tag }}
+            ghcr.io/${{ github.repository }}:${{ steps.tag.outputs.short-tag }}
