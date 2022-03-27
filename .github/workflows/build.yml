@@ -10,7 +10,7 @@ on:
 
 env:
   VERSIONS_URL: "https://go.dev/dl/?mode=json&include=all"
-  VERSIONS_JSON: "/versions.json"
+  VERSIONS_JSON: "/tmp/versions.json"
 
 jobs:
   build:
@@ -35,6 +35,7 @@ jobs:
           wget -nc -O ${{ env.VERSIONS_JSON }} ${{ env.VERSIONS_URL }}
           echo ::set-output name=sha256::$(jq '.[]| select((.version == "go${{ steps.tag.outputs.tag }}")).files[] | select((.os == "linux") and (.arch == "amd64") and (.kind == "archive"))| {sha256}' ${{ env.VERSIONS_JSON }} | tr -d "{}"| sed '/^$/d'|tr -d " "| cut -f2 -d":")
           echo ::set-output name=filename::$(jq '.[]| select((.version == "go${{ steps.tag.outputs.tag }}")).files[] | select((.os == "linux") and (.arch == "amd64") and (.kind == "archive"))| {filename}' ${{ env.VERSIONS_JSON }} | tr -d "{}"| sed '/^$/d'|tr -d " "| cut -f2 -d":")
+          echo "${{ steps.available-versions.outputs.sha256}} - ${{ steps.available-versions.outputs.filename}}"
 
       - name: Checkout Code
         uses: actions/checkout@v2
@@ -43,15 +44,11 @@ jobs:
         id: check-latest
         run: |
           echo ::set-output name=latest::$(cat ${GITHUB_WORKSPACE}/.github/.latest)
-
-      - name: Print tags
-        run: |
-          echo "${{ steps.tag.outputs.tag }} - ${{ steps.check-latest.outputs.latest }}"
+          echo ::set-output name=current::$(echo "go${{ steps.tag.outputs.tag }})
 
       - name: Set up Docker Buildx
         id:   buildx
         uses: docker/setup-buildx-action@v1
-
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v1
@@ -62,7 +59,7 @@ jobs:
 
       - name: Build and Push Docker Image - with latest
         uses: docker/build-push-action@v2
-        if: ${{ steps.check-latest.outputs.latest == steps.tag.outputs.tag }}
+        if: ${{ steps.check-latest.outputs.latest == steps.check-latest.outputs.current }}
         with:
           context: ./
           file: ./Dockerfile
