@@ -44,7 +44,7 @@ jobs:
         id: check-latest
         run: |
           echo ::set-output name=latest::$(cat ${GITHUB_WORKSPACE}/.github/.latest)
-          echo ::set-output name=current::$(echo "go${{ steps.tag.outputs.tag }})
+          echo ::set-output name=current::$(echo "go${{ steps.tag.outputs.tag }}")
 
       - name: Set up Docker Buildx
         id:   buildx
