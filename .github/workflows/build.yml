@@ -8,6 +8,10 @@ on:
     paths-ignore:
     - '.github/workflows/**'
 
+env:
+  VERSIONS_URL="https://go.dev/dl/?mode=json&include=all"
+  VERSIONS_JSON="/versions.json"
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -25,6 +29,13 @@ jobs:
           SHORT_TAG=$(echo ${{ steps.tag.outputs.tag }} | cut -f1-2 -d'.')
           echo ::set-output name=tag::$SHORT_TAG
 
+      - name: Fetch available versions
+        id: available-versions
+        run: |
+          wget -nc -O ${{ env.VERSIONS_JSON }} ${{ env.VERSIONS_URL }}
+          echo ::set-output name=sha256::$(jq '.[]| select((.version == "go${{ steps.tag.outputs.tag }}")).files[] | select((.os == "linux") and (.arch == "amd64") and (.kind == "archive"))| {sha256}' ${{ env.VERSIONS_JSON }} | tr -d "{}"| sed '/^$/d'|tr -d " "| cut -f2 -d":")
+          echo ::set-output name=filename::$(jq '.[]| select((.version == "go${{ steps.tag.outputs.tag }}")).files[] | select((.os == "linux") and (.arch == "amd64") and (.kind == "archive"))| {filename}' ${{ env.VERSIONS_JSON }} | tr -d "{}"| sed '/^$/d'|tr -d " "| cut -f2 -d":")
+
       - name: Checkout Code
         uses: actions/checkout@v2
 
@@ -32,6 +43,10 @@ jobs:
         id: check-latest
         run: |
           echo ::set-output name=latest::$(cat ${GITHUB_WORKSPACE}/.github/.latest)
+
+      - name: Print tags
+        run: |
+          echo "${{ steps.tag.outputs.tag }} - ${{ steps.check-latest.outputs.latest }}"
 
       - name: Set up Docker Buildx
         id:   buildx
@@ -55,6 +70,8 @@ jobs:
           platforms: linux/amd64, linux/arm64
           build-args: |
             GO_VERSION=${{ steps.short.outputs.tag }}
+            FILENAME=${{ steps.available-versions.outputs.filename }}
+            SHA256=${{ steps.available-versions.outputs.sha256 }}
           tags: |
             ghcr.io/${{ github.repository }}:${{ steps.tag.outputs.tag }}
             ghcr.io/${{ github.repository }}:${{ steps.short.outputs.tag }}
@@ -70,6 +87,8 @@ jobs:
           platforms: linux/amd64, linux/arm64
           build-args: |
             GO_VERSION=${{ steps.short.outputs.tag }}
+            FILENAME=${{ steps.available-versions.outputs.filename }}
+            SHA256=${{ steps.available-versions.outputs.sha256 }}
           tags: |
             ghcr.io/${{ github.repository }}:${{ steps.tag.outputs.tag }}
             ghcr.io/${{ github.repository }}:${{ steps.short.outputs.tag }}
