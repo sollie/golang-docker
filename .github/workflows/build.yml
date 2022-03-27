@@ -37,12 +37,12 @@ jobs:
       - name: Get SHA256
         id: get-sha256
         run: |
-          echo ::set-output name=sha256::$(jq '.[]| select((.version == "go${{ steps.tag.outputs.tag }}")).files[] | select((.os == "linux") and (.arch == "amd64") and (.kind == "archive"))| {sha256}' ${{ env.VERSIONS_JSON }} | tr -d "{}"| sed '/^$/d'|tr -d " "| cut -f2 -d":")
+          echo ::set-output name=sha256::$(jq '.[]| select((.version == "go${{ steps.tag.outputs.tag }}")).files[] | select((.os == "linux") and (.arch == "amd64") and (.kind == "archive"))| {sha256}' ${{ env.VERSIONS_JSON }} | tr -d "{}"| sed '/^$/d'|tr -d " "| cut -f2 -d":" | tr -d '"')
 
       - name: Get filename
         id: get-filename
         run: |
-          echo ::set-output name=filename::$(jq '.[]| select((.version == "go${{ steps.tag.outputs.tag }}")).files[] | select((.os == "linux") and (.arch == "amd64") and (.kind == "archive"))| {filename}' ${{ env.VERSIONS_JSON }} | tr -d "{}"| sed '/^$/d'|tr -d " "| cut -f2 -d":")
+          echo ::set-output name=filename::$(jq '.[]| select((.version == "go${{ steps.tag.outputs.tag }}")).files[] | select((.os == "linux") and (.arch == "amd64") and (.kind == "archive"))| {filename}' ${{ env.VERSIONS_JSON }} | tr -d "{}"| sed '/^$/d'|tr -d " "| cut -f2 -d":" | tr -d '"')
 
       - name: debug
         run: |
