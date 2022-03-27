@@ -22,8 +22,8 @@ RUN apk update && \
         wget
 
 RUN wget -nc -O ${VERSIONS_JSON} "${BASE_URL}/?mode=json&include=all" && \
-    SHA256=$(jq '.[]| select((.version == "go${GO_VERSION}")).files[] | select((.os == "linux") and (.arch == "amd64") and (.kind == "archive"))| {sha256}' ${VERSIONS_JSON} | tr -d "{}"| sed '/^$/d'|tr -d " "| cut -f2 -d":") \
-    FILENAME=$(jq '.[]| select((.version == "go${GO_VERSION}")).files[] | select((.os == "linux") and (.arch == "amd64") and (.kind == "archive"))| {filename}' ${VERSIONS_JSON} | tr -d "{}"| sed '/^$/d'|tr -d " "| cut -f2 -d":") \
+    SHA256=$(jq '.[]| select((.version == "go${GO_VERSION}")).files[] | select((.os == "linux") and (.arch == "amd64") and (.kind == "archive"))| {sha256}' ${VERSIONS_JSON} | tr -d "{}"| sed '/^$/d'|tr -d " "| cut -f2 -d":") && \
+    FILENAME=$(jq '.[]| select((.version == "go${GO_VERSION}")).files[] | select((.os == "linux") and (.arch == "amd64") and (.kind == "archive"))| {filename}' ${VERSIONS_JSON} | tr -d "{}"| sed '/^$/d'|tr -d " "| cut -f2 -d":") && \
     wget -nc -P /tmp/cache ${BASE_URL}/${FILENAME} && \
     echo "${SHA256} /tmp/cache/${FILENAME}" | sha256sum -c - && \
     tar -zxf /tmp/cache/${FILENAME} -P -C /opt && \
