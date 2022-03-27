@@ -7,7 +7,6 @@ on:
       - "v*"
     paths-ignore:
     - '.github/workflows/**'
-    - '.github/.Dockerfile.tmpl'
 
 jobs:
   build:
@@ -46,7 +45,10 @@ jobs:
         with:
           context: ./
           file: ./Dockerfile
-          push: true # Will only build if this is not here
+          push: true
+          platforms: linux/amd64, linux/arm64
+          build-args: |
+            GO_VERSION=${{ steps.short.outputs.tag }}
           tags: |
             ghcr.io/${{ github.repository }}:latest
             ghcr.io/${{ github.repository }}:${{ steps.tag.outputs.tag }}
