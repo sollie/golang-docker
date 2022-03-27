@@ -22,10 +22,10 @@ RUN apk update && \
         unzip \
         wget
 
-RUN wget -nc -P /tmp/cache ${BASE_URL}/${FILENAME} && \
-    echo "${SHA256} /tmp/cache/${FILENAME}" | sha256sum -c - && \
-    tar -zxf /tmp/cache/${FILENAME} -P -C /opt && \
-    rm -rf /tmp/cache/${FILENAME}
+RUN wget -nc -P /tmp/cache $BASE_URL/$FILENAME && \
+    echo "$SHA256 /tmp/cache/$FILENAME" | sha256sum -c - && \
+    tar -zxf /tmp/cache/$FILENAME -P -C /opt && \
+    rm -rf /tmp/cache/$FILENAME
 RUN mkdir -p "/go/src" "/go/bin" && chmod -R 777 "/go"
 
 WORKDIR $GOPATH
