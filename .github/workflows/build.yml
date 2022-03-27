@@ -9,8 +9,8 @@ on:
     - '.github/workflows/**'
 
 env:
-  VERSIONS_URL="https://go.dev/dl/?mode=json&include=all"
-  VERSIONS_JSON="/versions.json"
+  VERSIONS_URL: "https://go.dev/dl/?mode=json&include=all"
+  VERSIONS_JSON: "/versions.json"
 
 jobs:
   build:
