@@ -1,4 +1,4 @@
-FROM alpine:${ALPINE_IMAGE}
+FROM alpine:3.15
 LABEL maintainer="Pål Sollie <sollie@sparkz.no>" org.opencontainers.image.source="https://github.com/sollie/golang-docker"
 
 ARG BASE_URL="https://go.dev/dl"
