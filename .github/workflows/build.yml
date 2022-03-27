@@ -35,7 +35,8 @@ jobs:
           wget -nc -O ${{ env.VERSIONS_JSON }} ${{ env.VERSIONS_URL }}
           echo ::set-output name=sha256::$(jq '.[]| select((.version == "go${{ steps.tag.outputs.tag }}")).files[] | select((.os == "linux") and (.arch == "amd64") and (.kind == "archive"))| {sha256}' ${{ env.VERSIONS_JSON }} | tr -d "{}"| sed '/^$/d'|tr -d " "| cut -f2 -d":")
           echo ::set-output name=filename::$(jq '.[]| select((.version == "go${{ steps.tag.outputs.tag }}")).files[] | select((.os == "linux") and (.arch == "amd64") and (.kind == "archive"))| {filename}' ${{ env.VERSIONS_JSON }} | tr -d "{}"| sed '/^$/d'|tr -d " "| cut -f2 -d":")
-          echo "${{ steps.available-versions.outputs.sha256}} - ${{ steps.available-versions.outputs.filename}}"
+          echo $(jq '.[]| select((.version == "go${{ steps.tag.outputs.tag }}")).files[] | select((.os == "linux") and (.arch == "amd64") and (.kind == "archive"))| {sha256}' ${{ env.VERSIONS_JSON }} | tr -d "{}"| sed '/^$/d'|tr -d " "| cut -f2 -d":")
+          echo $(jq '.[]| select((.version == "go${{ steps.tag.outputs.tag }}")).files[] | select((.os == "linux") and (.arch == "amd64") and (.kind == "archive"))| {filename}' ${{ env.VERSIONS_JSON }} | tr -d "{}"| sed '/^$/d'|tr -d " "| cut -f2 -d":")
 
       - name: Checkout Code
         uses: actions/checkout@v2
