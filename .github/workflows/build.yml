@@ -7,6 +7,7 @@ on:
       - "v*"
     paths-ignore:
     - '.github/workflows/**'
+    - '.github/.Dockerfile.tmpl'
 
 jobs:
   build:
@@ -17,8 +18,13 @@ jobs:
         if: "startsWith(github.ref, 'refs/tags/v')"
         run: |
           echo ::set-output name=tag::${GITHUB_REF#refs/tags/v}
+
+      - name: Short tag
+        id: short
+        if: "startsWith(github.ref, 'refs/tags/v')"
+        run: |
           SHORT_TAG=$(echo ${{ steps.tag.outputs.tag }} | cut -f1-2 -d'.')
-          echo ::set-output name=short::$SHORT_TAG
+          echo ::set-output name=tag::$SHORT_TAG
 
       - name: Checkout Code
         uses: actions/checkout@v2
@@ -41,10 +47,7 @@ jobs:
           context: ./
           file: ./Dockerfile
           push: true # Will only build if this is not here
-          platforms: linux/amd64, linux/arm64
-          build-args: |
-            GO_VERSION=${{ steps.tag.outputs.tag }}
           tags: |
             ghcr.io/${{ github.repository }}:latest
             ghcr.io/${{ github.repository }}:${{ steps.tag.outputs.tag }}
-            ghcr.io/${{ github.repository }}:${{ steps.tag.outputs.short }}
+            ghcr.io/${{ github.repository }}:${{ steps.short.outputs.tag }}
